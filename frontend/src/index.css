@@ -1,0 +1,12 @@
+body { font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 1rem; }
+.contenedor { display: flex; flex-direction: column; gap: 0.5rem; }
+form { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+input, textarea { padding: 0.5rem; }
+button { padding: 0.5rem; cursor: pointer; }
+.publicacion { border: 1px solid #ddd; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; }
+.autor { font-weight: bold; margin: 0; }
+.acciones { display: flex; gap: 0.5rem; }
+.respuestas { margin-top: 0.5rem; padding-left: 1rem; border-left: 2px solid #eee; }
+.encabezado { display: flex; justify-content: space-between; align-items: center; }
+.error { color: red; }
+.reply-form { flex-direction: row; margin-top: 0.5rem; }
