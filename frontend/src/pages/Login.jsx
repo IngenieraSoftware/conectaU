@@ -20,15 +20,17 @@ export default function Login() {
   }
 
   return (
-    <div className="contenedor">
-      <h2>Iniciar sesión</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">Entrar</button>
-      </form>
-      {error && <p className="error">{error}</p>}
-      <p>¿No tienes cuenta? <Link to="/registro">Regístrate</Link></p>
+    <div className="pantalla-auth">
+      <div className="tarjeta-auth">
+        <h2>Iniciar sesión</h2>
+        <form onSubmit={handleSubmit}>
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <button type="submit">Entrar</button>
+        </form>
+        {error && <p className="error">{error}</p>}
+        <p>¿No tienes cuenta? <Link to="/registro">Regístrate</Link></p>
+      </div>
     </div>
   );
 }

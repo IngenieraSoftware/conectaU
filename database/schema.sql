@@ -1,54 +1,35 @@
--- Ejecutar esto en Supabase: Dashboard -> SQL Editor -> New query -> Run
-
--- Tabla de perfiles (nombre visible del usuario, ligada a auth.users)
-create table public.perfiles (
-  id uuid references auth.users(id) on delete cascade primary key,
-  nombre text not null,
-  creado_en timestamp default now()
-);
-
--- Se crea el perfil automáticamente cuando alguien se registra
-create function public.manejar_nuevo_usuario()
-returns trigger as $$
-begin
-  insert into public.perfiles (id, nombre)
-  values (new.id, new.raw_user_meta_data->>'nombre');
-  return new;
-end;
-$$ language plpgsql security definer;
-
-create trigger al_crear_usuario
-  after insert on auth.users
-  for each row execute procedure public.manejar_nuevo_usuario();
-
--- Publicaciones
-create table public.publicaciones (
+create table if not exists public.usuario (
   id bigint generated always as identity primary key,
-  usuario_id uuid references auth.users(id) on delete cascade not null,
-  contenido text not null,
-  creado_en timestamp default now()
+  nombre varchar(100) not null,
+  email varchar(150) unique not null,
+  contraseña varchar(255) not null,
+  edad integer,
+  sexo varchar(20)
 );
 
--- Respuestas
-create table public.respuestas (
+create table if not exists public.publicacion (
   id bigint generated always as identity primary key,
-  publicacion_id bigint references public.publicaciones(id) on delete cascade not null,
-  usuario_id uuid references auth.users(id) on delete cascade not null,
-  contenido text not null,
-  creado_en timestamp default now()
+  usuario_id bigint not null references public.usuario(id) on delete cascade,
+  titulo varchar(150) not null,
+  contenido text,
+  descripcion text,
+  fecha date default current_date,
+  estado boolean default true
 );
 
--- Row Level Security
-alter table public.perfiles enable row level security;
-alter table public.publicaciones enable row level security;
-alter table public.respuestas enable row level security;
+create table if not exists public.comentario (
+  id bigint generated always as identity primary key,
+  usuario_id bigint not null references public.usuario(id) on delete cascade,
+  publicacion_id bigint not null references public.publicacion(id) on delete cascade,
+  texto text not null,
+  fecha date default current_date,
+  estado boolean default true
+);
 
--- Lectura: cualquier usuario autenticado puede ver todo
-create policy "Perfiles visibles" on public.perfiles for select using (true);
-create policy "Publicaciones visibles" on public.publicaciones for select using (true);
-create policy "Respuestas visibles" on public.respuestas for select using (true);
+alter table public.usuario enable row level security;
+alter table public.publicacion enable row level security;
+alter table public.comentario enable row level security;
 
--- Escritura: solo el dueño puede crear/borrar lo suyo
-create policy "Crear publicacion propia" on public.publicaciones for insert with check (auth.uid() = usuario_id);
-create policy "Borrar publicacion propia" on public.publicaciones for delete using (auth.uid() = usuario_id);
-create policy "Crear respuesta propia" on public.respuestas for insert with check (auth.uid() = usuario_id);
+create policy "acceso abierto usuario" on public.usuario for all using (true) with check (true);
+create policy "acceso abierto publicacion" on public.publicacion for all using (true) with check (true);
+create policy "acceso abierto comentario" on public.comentario for all using (true) with check (true);
