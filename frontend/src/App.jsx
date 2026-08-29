@@ -4,6 +4,7 @@ import { supabase } from './supabaseClient.js';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Feed from './pages/Feed.jsx';
+import VerPublicaciones from './pages/VerPublicaciones.jsx';
 
 function useSesion() {
   const [sesion, setSesion] = useState(undefined);
@@ -20,11 +21,12 @@ function useSesion() {
 }
 
 export default function App() {
- const sesion = useSesion();
+  const sesion = useSesion();
 
   return (
     <Routes>
-       <Route path="/" element={sesion ? <Feed /> : <Navigate to="/login" />} />
+      <Route path="/" element={sesion ? <Feed /> : <Navigate to="/login" />} />
+      <Route path="/publicaciones" element={sesion ? <VerPublicaciones /> : <Navigate to="/login" />} />
       <Route path="/login" element={sesion ? <Navigate to="/" /> : <Login />} />
       <Route path="/registro" element={sesion ? <Navigate to="/" /> : <Register />} />
     </Routes>

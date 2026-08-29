@@ -36,6 +36,7 @@ export default function Feed() {
     <div className="contenedor">
       <div className="encabezado">
         <h2>Feed</h2>
+        <button onClick={() => navigate('/publicaciones')}>Ver publicaciones</button>
         <button onClick={handleLogout}>Cerrar sesión</button>
       </div>
 
