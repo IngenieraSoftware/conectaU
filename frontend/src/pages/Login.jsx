@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../api.js';
+import '../Estilos/Login.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
