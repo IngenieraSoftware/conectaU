@@ -5,7 +5,9 @@ import PostCard from '../components/PostCard.jsx';
 
 export default function Feed() {
   const [publicaciones, setPublicaciones] = useState([]);
-  const [contenido, setContenido] = useState('');
+  const [texto, setTexto] = useState('');
+  const [enviando, setEnviando] = useState(false);
+  const [errorPublicar, setErrorPublicar] = useState('');
   const [usuario, setUsuario] = useState(null);
   const navigate = useNavigate();
 
@@ -21,16 +23,26 @@ export default function Feed() {
 
   async function handlePublicar(e) {
     e.preventDefault();
-    if (!contenido.trim()) return;
-    await postsApi.crear(contenido);
-    setContenido('');
-    cargar();
+    if (!texto.trim()) return;
+    setErrorPublicar('');
+    setEnviando(true);
+    try {
+      await postsApi.crear(texto);
+      setTexto('');
+      cargar();
+    } catch (err) {
+      setErrorPublicar(err.message);
+    } finally {
+      setEnviando(false);
+    }
   }
 
   async function handleLogout() {
     await authApi.logout();
     navigate('/login');
   }
+
+  const inicial = (usuario?.nombre || '?').trim().charAt(0).toUpperCase();
 
   return (
     <div className="contenedor">
@@ -39,13 +51,25 @@ export default function Feed() {
         <button onClick={handleLogout}>Cerrar sesión</button>
       </div>
 
-      <form onSubmit={handlePublicar}>
-        <textarea
-          placeholder="¿Qué quieres compartir?"
-          value={contenido}
-          onChange={(e) => setContenido(e.target.value)}
-        />
-        <button type="submit">Publicar</button>
+      <form onSubmit={handlePublicar} className="tarjeta-publicar">
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <div className="avatar">{inicial}</div>
+          <div style={{ flex: 1 }}>
+            <textarea
+              placeholder="¿Qué está pasando?"
+              value={texto}
+              maxLength={280}
+              onChange={(e) => setTexto(e.target.value)}
+            />
+            <div className="publicar-pie">
+              <span className="contador">{texto.length}/280</span>
+              <button type="submit" disabled={enviando || !texto.trim()}>
+                {enviando ? 'Publicando...' : 'Publicar'}
+              </button>
+            </div>
+            {errorPublicar && <p className="error">{errorPublicar}</p>}
+          </div>
+        </div>
       </form>
 
       {publicaciones.map((pub) => (
