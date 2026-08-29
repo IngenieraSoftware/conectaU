@@ -7,6 +7,10 @@ create table public.perfiles (
   creado_en timestamp default now()
 );
 
+-- HU01: el nombre de usuario debe ser único (sin distinguir mayúsculas/minúsculas,
+-- para que "Juan" y "juan" cuenten como el mismo nombre)
+create unique index perfiles_nombre_unico_idx on public.perfiles (lower(nombre));
+
 -- Se crea el perfil automáticamente cuando alguien se registra
 create function public.manejar_nuevo_usuario()
 returns trigger as $$

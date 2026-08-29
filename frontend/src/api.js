@@ -1,14 +1,53 @@
 import { supabase } from './supabaseClient.js';
 
+// Traduce mensajes de error de Supabase/Postgres a algo que un usuario entienda.
+function traducirErrorRegistro(mensaje) {
+  const m = (mensaje || '').toLowerCase();
+  if (m.includes('already registered') || m.includes('already been registered')) {
+    return 'Ya existe una cuenta con ese correo electrónico.';
+  }
+  if (m.includes('duplicate') || m.includes('unique')) {
+    // Si no fue el correo (caso de arriba), es la carrera del nombre único
+    // (dos registros casi simultáneos con el mismo nombre).
+    return 'Ese nombre de usuario ya está en uso. Elige otro.';
+  }
+  if (m.includes('password')) {
+    return 'La contraseña no cumple los requisitos mínimos de Supabase (revisa longitud).';
+  }
+  return mensaje;
+}
+
 export const authApi = {
-  async registrar({ nombre, email, password }) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { nombre } },
-    });
+  // Verifica disponibilidad del nombre ANTES de intentar crear la cuenta,
+  // así el usuario recibe el error correcto en vez de un mensaje genérico.
+  async nombreDisponible(nombre) {
+    const { data, error } = await supabase
+      .from('perfiles')
+      .select('id')
+      .ilike('nombre', nombre.trim())
+      .maybeSingle();
     if (error) throw new Error(error.message);
-    return data;
+    return !data;
+  },
+
+  async registrar({ nombre, email, password }) {
+    const nombreLimpio = nombre.trim();
+    const emailLimpio = email.trim().toLowerCase();
+
+    const disponible = await this.nombreDisponible(nombreLimpio);
+    if (!disponible) {
+      throw new Error('Ese nombre de usuario ya está en uso. Elige otro.');
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email: emailLimpio,
+      password,
+      options: { data: { nombre: nombreLimpio } },
+    });
+    // El índice único de la BD (lower(nombre)) es la garantía real contra
+    // condiciones de carrera; si llega a fallar aquí, se traduce el mensaje.
+    if (error) throw new Error(traducirErrorRegistro(error.message));
+    return data; // data.session existe si "Confirm email" está desactivado
   },
 
   async login({ email, password }) {
