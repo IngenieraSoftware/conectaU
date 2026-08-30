@@ -19,6 +19,8 @@ export const authApi = {
       .select('id, nombre, email')
       .single();
     if (error) throw new Error(error.message);
+
+    guardarSesion(data);
     return data;
   },
 
@@ -53,7 +55,7 @@ export const postsApi = {
   async obtener() {
     const { data: publicaciones, error } = await supabase
       .from('publicacion')
-      .select('id, titulo, descripcion, usuario_id, usuario(nombre)')
+      .select('id, descripcion, usuario_id, usuario(nombre)')
       .eq('estado', true)
       .order('id', { ascending: false });
     if (error) throw new Error(error.message);
@@ -67,7 +69,6 @@ export const postsApi = {
 
     return publicaciones.map((pub) => ({
       id: pub.id,
-      titulo: pub.titulo,
       contenido: pub.descripcion,
       autor: pub.usuario?.nombre,
       autor_id: pub.usuario_id,
@@ -77,12 +78,12 @@ export const postsApi = {
     }));
   },
 
-  async crear({ titulo, descripcion }) {
+  async crear(texto) {
     const usuario = await authApi.usuarioActual();
     if (!usuario) throw new Error('Debes iniciar sesión');
     const { data, error } = await supabase
       .from('publicacion')
-      .insert({ usuario_id: usuario.id, titulo, descripcion, estado: true })
+      .insert({ usuario_id: usuario.id, titulo: texto.slice(0, 40), descripcion: texto, estado: true })
       .select()
       .single();
     if (error) throw new Error(error.message);
