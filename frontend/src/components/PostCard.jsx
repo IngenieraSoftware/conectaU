@@ -36,15 +36,27 @@ export default function PostCard({ publicacion, usuarioActual, onActualizar }) {
             </button>
           )}
         </div>
-
+        
         {mostrarRespuestas && (
           <div className="respuestas">
             {publicacion.respuestas.map((r) => (
-              <p key={r.id} className="respuesta-item"><strong>{r.autor}:</strong> {r.contenido}</p>
+              <div key={r.id} className="respuesta-item">
+                <span><strong>{r.autor}:</strong> {r.contenido}</span>
+                {usuarioActual && usuarioActual.id === r.autor_id && (
+                  <button
+                    className="accion-boton borrar"
+                    onClick={async () => { await postsApi.borrarComentario(r.id); onActualizar(); }}
+                  >
+                    Borrar
+                  </button>
+                )}
+              </div>
             ))}
             <ReplyForm publicacionId={publicacion.id} onRespondido={onActualizar} />
           </div>
         )}
+
+
       </div>
     </div>
   );

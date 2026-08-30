@@ -74,7 +74,7 @@ export const postsApi = {
       autor_id: pub.usuario_id,
       respuestas: comentarios
         .filter((c) => c.publicacion_id === pub.id)
-        .map((c) => ({ id: c.id, contenido: c.texto, autor: c.usuario?.nombre })),
+        .map((c) => ({ id: c.id, contenido: c.texto, autor: c.usuario?.nombre, autor_id: c.usuario_id })),
     }));
   },
 
@@ -92,6 +92,11 @@ export const postsApi = {
 
   async borrar(id) {
     const { error } = await supabase.from('publicacion').update({ estado: false }).eq('id', id);
+    if (error) throw new Error(error.message);
+  },
+
+  async borrarComentario(id) {
+    const { error } = await supabase.from('comentario').update({ estado: false }).eq('id', id);
     if (error) throw new Error(error.message);
   },
 
