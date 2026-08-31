@@ -37,8 +37,27 @@ input, textarea {
 input:focus, textarea:focus { outline: none; border-color: var(--color-accent); }
 button { font-family: var(--font-body); }
 
-.encabezado { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; }
-.encabezado h2 { font-family: var(--font-display); font-size: 2rem; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+/* Encabezado */
+.encabezado { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  margin-bottom: 1.5rem; 
+}
+.encabezado h2 { 
+  font-family: var(--font-display); 
+  font-size: 2rem; 
+  font-weight: 600; 
+  margin: 0; 
+  letter-spacing: -0.01em; 
+  text-align: center;
+  flex: 1;
+}
+.encabezado-acciones {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
 .encabezado button {
   background: none; border: 1px solid var(--color-line); color: var(--color-ink-soft);
   font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;
@@ -46,18 +65,104 @@ button { font-family: var(--font-body); }
 }
 .encabezado button:hover { border-color: var(--color-accent); color: var(--color-accent); }
 
-.tarjeta-publicar { border-bottom: 1px solid var(--color-line); padding-bottom: 1.25rem; margin-bottom: 1.25rem; }
-.tarjeta-publicar textarea { width: 100%; border: none; resize: none; min-height: 70px; font-size: 1.05rem; background: transparent; padding: 0; }
-.tarjeta-publicar textarea:focus { outline: none; }
-.publicar-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; }
+.encabezado .btn-publicar-header {
+  background: var(--color-accent);
+  color: #fff;
+  border: 1px solid var(--color-accent);
+}
+.encabezado .btn-publicar-header:hover {
+  opacity: 0.88;
+  color: #fff;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(27, 40, 46, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-contenido {
+  background-color: var(--color-surface);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 520px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--color-line);
+}
+.modal-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.modal-encabezado h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+.btn-cerrar-modal {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+}
+.btn-cerrar-modal:hover {
+  color: var(--color-ink);
+}
+.modal-cuerpo {
+  display: flex;
+  gap: 0.75rem;
+}
+.modal-editor {
+  flex: 1;
+}
+.modal-editor textarea {
+  width: 100%;
+  min-height: 110px;
+  resize: vertical;
+  border: 1px solid var(--color-line);
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+.modal-acciones-pie {
+  display: flex;
+  gap: 0.5rem;
+}
+.btn-cancelar {
+  background: none;
+  border: none;
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+}
+.btn-cancelar:hover {
+  background: var(--color-bg);
+}
+
+.publicar-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; }
 .contador { font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-ink-soft); }
-.tarjeta-publicar button[type="submit"] {
+
+.modal-editor button[type="submit"] {
   background: var(--color-accent); color: #fff; border: none; border-radius: 999px;
   padding: 0.5rem 1.3rem; font-weight: 600; cursor: pointer; transition: opacity .15s;
 }
-.tarjeta-publicar button[type="submit"]:disabled { opacity: 0.4; cursor: default; }
-.tarjeta-publicar button[type="submit"]:not(:disabled):hover { opacity: 0.88; }
+.modal-editor button[type="submit"]:disabled { opacity: 0.4; cursor: default; }
+.modal-editor button[type="submit"]:not(:disabled):hover { opacity: 0.88; }
 
+/* Publicaciones */
 .publicacion { display: flex; gap: 0.9rem; padding: 1.1rem 0; border-bottom: 1px solid var(--color-line); }
 .publicacion:last-child { border-bottom: none; }
 .avatar {

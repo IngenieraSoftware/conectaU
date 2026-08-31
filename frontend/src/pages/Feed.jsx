@@ -9,6 +9,7 @@ export default function Feed() {
   const [enviando, setEnviando] = useState(false);
   const [errorPublicar, setErrorPublicar] = useState('');
   const [usuario, setUsuario] = useState(null);
+  const [mostrarModal, setMostrarModal] = useState(false);
   const navigate = useNavigate();
 
   async function cargar() {
@@ -29,6 +30,7 @@ export default function Feed() {
     try {
       await postsApi.crear(texto);
       setTexto('');
+      setMostrarModal(false);
       cargar();
     } catch (err) {
       setErrorPublicar(err.message);
@@ -47,30 +49,58 @@ export default function Feed() {
   return (
     <div className="contenedor">
       <div className="encabezado">
-        <h2>Feed</h2>
-        <button onClick={handleLogout}>Cerrar sesión</button>
+        <div className="avatar">{inicial}</div>
+        <h2>ConectU</h2>
+        <div className="encabezado-acciones">
+          <button className="btn-publicar-header" onClick={() => setMostrarModal(true)}>
+            Publicar
+          </button>
+          <button onClick={handleLogout}>Cerrar sesión</button>
+        </div>
       </div>
 
-      <form onSubmit={handlePublicar} className="tarjeta-publicar">
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <div className="avatar">{inicial}</div>
-          <div style={{ flex: 1 }}>
-            <textarea
-              placeholder="¿Qué está pasando?"
-              value={texto}
-              maxLength={280}
-              onChange={(e) => setTexto(e.target.value)}
-            />
-            <div className="publicar-pie">
-              <span className="contador">{texto.length}/280</span>
-              <button type="submit" disabled={enviando || !texto.trim()}>
-                {enviando ? 'Publicando...' : 'Publicar'}
+      {mostrarModal && (
+        <div className="modal-overlay">
+          <div className="modal-contenido">
+            <div className="modal-encabezado">
+              <h3>Crear publicación</h3>
+              <button className="btn-cerrar-modal" onClick={() => setMostrarModal(false)}>
+                ✕
               </button>
             </div>
-            {errorPublicar && <p className="error">{errorPublicar}</p>}
+
+            <form onSubmit={handlePublicar}>
+              <div className="modal-cuerpo">
+                <div className="avatar">{inicial}</div>
+                <div className="modal-editor">
+                  <textarea
+                    placeholder="¿Qué está pasando?"
+                    value={texto}
+                    maxLength={280}
+                    onChange={(e) => setTexto(e.target.value)}
+                  />
+                  <div className="publicar-pie">
+                    <span className="contador">{texto.length}/280</span>
+                    <div className="modal-acciones-pie">
+                      <button
+                        type="button"
+                        className="btn-cancelar"
+                        onClick={() => setMostrarModal(false)}
+                      >
+                        Cancelar
+                      </button>
+                      <button type="submit" disabled={enviando || !texto.trim()}>
+                        {enviando ? 'Publicando...' : 'Publicar'}
+                      </button>
+                    </div>
+                  </div>
+                  {errorPublicar && <p className="error">{errorPublicar}</p>}
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-      </form>
+      )}
 
       {publicaciones.map((pub) => (
         <PostCard key={pub.id} publicacion={pub} usuarioActual={usuario} onActualizar={cargar} />
