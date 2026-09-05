@@ -2,6 +2,16 @@ import { useState } from 'react';
 import { postsApi } from '../api.js';
 import ReplyForm from './ReplyForm.jsx';
 
+function formatearFecha(fechaIso) {
+  if (!fechaIso) return '';
+  const fecha = new Date(fechaIso);
+  return fecha.toLocaleDateString('es-BO', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
 export default function PostCard({ publicacion, usuarioActual, onActualizar }) {
   const [mostrarRespuestas, setMostrarRespuestas] = useState(false);
 
@@ -14,11 +24,16 @@ export default function PostCard({ publicacion, usuarioActual, onActualizar }) {
   const inicial = (publicacion.autor || '?').trim().charAt(0).toUpperCase();
 
   return (
-    <div className="publicacion">
+    <article className="publicacion">
       <div className="avatar">{inicial}</div>
       <div className="publicacion-cuerpo">
-        <p className="autor">{publicacion.autor}</p>
-        <p>{publicacion.contenido}</p>
+        <div className="publicacion-header">
+          <p className="autor">{publicacion.autor}</p>
+          <time className="publicacion-fecha" dateTime={publicacion.fecha}>
+            {formatearFecha(publicacion.fecha)}
+          </time>
+        </div>
+        <p className="publicacion-texto">{publicacion.contenido}</p>
 
         <div className="acciones">
           <button className="accion-boton" onClick={() => setMostrarRespuestas(!mostrarRespuestas)}>
@@ -46,6 +61,6 @@ export default function PostCard({ publicacion, usuarioActual, onActualizar }) {
           </div>
         )}
       </div>
-    </div>
+    </article>
   );
 }

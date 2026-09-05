@@ -53,10 +53,15 @@ export const authApi = {
 
 export const postsApi = {
   async obtener() {
+    // HU04: se agrega `fecha` al select y se usa como criterio de orden
+    // (más reciente primero). Se usa `id` como desempate, ya que `fecha`
+    // es de tipo date (sin hora) y varias publicaciones del mismo día
+    // tendrían el mismo valor.
     const { data: publicaciones, error } = await supabase
       .from('publicacion')
-      .select('id, descripcion, usuario_id, usuario(nombre)')
+      .select('id, descripcion, fecha, usuario_id, usuario(nombre)')
       .eq('estado', true)
+      .order('fecha', { ascending: false })
       .order('id', { ascending: false });
     if (error) throw new Error(error.message);
 
@@ -70,6 +75,7 @@ export const postsApi = {
     return publicaciones.map((pub) => ({
       id: pub.id,
       contenido: pub.descripcion,
+      fecha: pub.fecha,
       autor: pub.usuario?.nombre,
       autor_id: pub.usuario_id,
       respuestas: comentarios
